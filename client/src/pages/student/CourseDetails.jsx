@@ -114,12 +114,12 @@ const CourseDetails = () => {
                 className='w-3.5 h-3.5' />
               ))}
             </div>
-            <p className='text-blue-600'>({courseData.courseRatings.length} {courseData.courseRatings.length > 1 ? 'ratings' : 'rating'})</p>
+            <p className='text-blue-600'>({courseData?.courseRatings?.length ?? 0} {(courseData?.courseRatings?.length ?? 0) > 1 ? 'ratings' : 'rating'})</p>
 
-            <p>{courseData.enrolledStudents.length} {courseData.enrolledStudents.length > 1 ? 'students' : 'student'}</p>
+            <p>{courseData?.enrolledStudents?.length ?? 0} {(courseData?.enrolledStudents?.length ?? 0) > 1 ? 'students' : 'student'}</p>
           </div>
 
-          <p className='text-sm'>Course by <span className='text-blue-600 underline'>{courseData.educator.name}</span></p>
+          <p className='text-sm'>Course by <span className='text-blue-600 underline'>{courseData?.educator?.name ?? 'Unknown Educator'}</span></p>
 
           <div className="pt-8 text-gray-800">
             <h2 className="text-xl font-semibold">Course Structure</h2>

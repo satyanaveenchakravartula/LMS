@@ -25,7 +25,7 @@ const courseSchema = new mongoose.Schema({
     discount: { type: Number, required: true, min: 0, max: 100 },
     courseContent: [chapterSchema], // Use the chapter schema here
     educator: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
