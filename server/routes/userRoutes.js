@@ -1,8 +1,11 @@
 import express from 'express'
-import { addUserRating, getUserCourseProgress, getUserData, purchaseCourse, updateUserCourseProgress, userEnrolledCourses } from '../controllers/userController.js';
+import { addUserRating, createOrUpdateUser, getUserCourseProgress, getUserData, purchaseCourse, updateUserCourseProgress, userEnrolledCourses } from '../controllers/userController.js';
 
 
 const userRouter = express.Router()
+
+// Create or update user
+userRouter.post('/create-update', createOrUpdateUser)
 
 // Get user Data
 userRouter.get('/data', getUserData)

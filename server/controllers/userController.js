@@ -4,6 +4,39 @@ import { Purchase } from "../models/Purchase.js"
 import User from "../models/User.js"
 import stripe from "stripe"
 
+// Create or Update User
+export const createOrUpdateUser = async (req, res) => {
+    try {
+        const userId = req.auth.userId;
+        const { name, email, imageUrl } = req.body;
+
+        // Try to find existing user
+        let user = await User.findById(userId);
+
+        if (user) {
+            // Update existing user
+            user.name = name;
+            user.email = email;
+            user.imageUrl = imageUrl;
+            await user.save();
+        } else {
+            // Create new user
+            user = await User.create({
+                _id: userId,
+                name,
+                email,
+                imageUrl,
+                enrolledCourses: []
+            });
+        }
+
+        res.json({ success: true, user });
+    } catch (error) {
+        console.error('Error creating/updating user:', error);
+        res.json({ success: false, message: error.message });
+    }
+};
+
 
 
 // Get User Data

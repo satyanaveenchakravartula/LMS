@@ -43,28 +43,43 @@ export const AppContextProvider = (props) => {
 
     // Fetch UserData 
     const fetchUserData = async () => {
-
         try {
-
             if (user.publicMetadata.role === 'educator') {
                 setIsEducator(true)
             }
 
             const token = await getToken();
 
-            const { data } = await axios.get(backendUrl + '/api/user/data',
-                { headers: { Authorization: `Bearer ${token}` } })
+            // First try to create/update the user
+            const createUserResponse = await axios.post(
+                backendUrl + '/api/user/create-update',
+                {
+                    name: user.fullName,
+                    email: user.primaryEmailAddress.emailAddress,
+                    imageUrl: user.imageUrl
+                },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            if (!createUserResponse.data.success) {
+                toast.error(createUserResponse.data.message);
+                return;
+            }
+
+            // Then fetch the user data
+            const { data } = await axios.get(
+                backendUrl + '/api/user/data',
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
 
             if (data.success) {
-                setUserData(data.user)
-            } else (
-                toast.error(data.message)
-            )
-
+                setUserData(data.user);
+            } else {
+                toast.error(data.message);
+            }
         } catch (error) {
-            toast.error(error.message)
+            toast.error(error.message);
         }
-
     }
 
     // Fetch User Enrolled Courses
