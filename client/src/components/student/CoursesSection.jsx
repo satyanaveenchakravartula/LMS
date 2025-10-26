@@ -4,8 +4,20 @@ import CourseCard from './CourseCard';
 import { Link } from 'react-router-dom';
 
 const CoursesSection = () => {
-
   const { allCourses } = useContext(AppContext)
+  
+  console.log('Courses in CoursesSection:', allCourses)
+
+  if (!allCourses || allCourses.length === 0) {
+    return (
+      <div className="py-16 md:px-40 px-8">
+        <h2 className="text-3xl font-medium text-gray-800">No courses available</h2>
+        <p className="md:text-base text-sm text-gray-500 mt-3">
+          Check back later for new courses.
+        </p>
+      </div>
+    )
+  }
 
   return (
     <div className="py-16 md:px-40 px-8">
