@@ -24,10 +24,9 @@ const courseSchema = new mongoose.Schema({
   isPublished: { type: Boolean, default: true },
   discount: { type: Number, required: true, min: 0, max: 100 },
   courseContent: [chapterSchema],
-  educator: {
-    type: String, // ✅ changed from ObjectId
-    ref: 'User',
-    required: true
+  educator: { 
+    type: String, // Clerk userId (e.g., user_xxx)
+    required: true 
   },
   courseRatings: [
     {
@@ -37,8 +36,7 @@ const courseSchema = new mongoose.Schema({
   ],
   enrolledStudents: [
     {
-      type: String,
-      ref: 'User'
+      type: String // Clerk user IDs
     }
   ]
 }, { timestamps: true, minimize: false });
