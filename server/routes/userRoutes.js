@@ -1,18 +1,27 @@
-import express from 'express'
-import { addUserRating, createOrUpdateUser, getUserCourseProgress, getUserData, purchaseCourse, updateUserCourseProgress, userEnrolledCourses } from '../controllers/userController.js';
+// server/routes/userRoutes.js
+import express from "express";
+import {
+  createOrUpdateUser,
+  getUserData,
+  purchaseCourse,
+  userEnrolledCourses,
+  updateUserCourseProgress,
+  getUserCourseProgress,
+  addUserRating,
+} from "../controllers/userController.js";
 
+import { requireAuth } from "@clerk/express";
+import { clerkAuth } from "../middlewares/authMiddleware.js";
 
-const userRouter = express.Router()
+const userRouter = express.Router();
 
-// Create or update user
-userRouter.post('/create-update', createOrUpdateUser)
-
-// Get user Data
-userRouter.get('/data', getUserData)
-userRouter.post('/purchase', purchaseCourse)
-userRouter.get('/enrolled-courses', userEnrolledCourses)
-userRouter.post('/update-course-progress', updateUserCourseProgress)
-userRouter.post('/get-course-progress', getUserCourseProgress)
-userRouter.post('/add-rating', addUserRating)
+// Protect routes: first Clerk validate (requireAuth), then our clerkAuth attaches req.userId
+userRouter.post("/create-update", requireAuth, clerkAuth, createOrUpdateUser);
+userRouter.get("/data", requireAuth, clerkAuth, getUserData);
+userRouter.post("/purchase", requireAuth, clerkAuth, purchaseCourse);
+userRouter.get("/enrolled-courses", requireAuth, clerkAuth, userEnrolledCourses);
+userRouter.post("/update-course-progress", requireAuth, clerkAuth, updateUserCourseProgress);
+userRouter.post("/get-course-progress", requireAuth, clerkAuth, getUserCourseProgress);
+userRouter.post("/add-rating", requireAuth, clerkAuth, addUserRating);
 
 export default userRouter;
