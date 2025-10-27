@@ -28,7 +28,7 @@ const CourseDetails = () => {
   } = useContext(AppContext);
 
   const { getToken } = useAuth();
-  const { isSignedIn } = useUser();
+  const { isSignedIn, user } = useUser();
 
   // ✅ Fetch course details
   const fetchCourseData = async () => {
@@ -55,26 +55,48 @@ const CourseDetails = () => {
   // ✅ Enroll button handler
   const enrollCourse = async () => {
     try {
-      console.log("Enroll button clicked");
-      console.log("userData:", userData);
-
       if (!isSignedIn) {
         return toast.warn("Please log in to enroll.");
       }
 
-     if (!userData || !userData._id) {
-  console.log("User data missing:", userData);
-  return toast.warn("User not found. Try reloading the page.");
-}
+      // First ensure we have user data
+      if (!userData || !userData._id) {
+        const token = await getToken();
+        if (!token) {
+          return toast.error("Authentication token missing. Please log in again.");
+        }
 
+        // Try to create/update user first
+        const createUserResponse = await axios.post(
+          `${backendUrl}/api/user/create-update`,
+          {
+            name: user.fullName,
+            email: user.primaryEmailAddress.emailAddress,
+            imageUrl: user.imageUrl
+          },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        if (!createUserResponse.data.success) {
+          return toast.error("Failed to create user profile. Please try again.");
+        }
+
+        // Fetch updated user data
+        const { data: userData } = await axios.get(
+          `${backendUrl}/api/user/data`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        if (!userData.success || !userData.user) {
+          return toast.error("Failed to fetch user data. Please try again.");
+        }
+      }
 
       if (isAlreadyEnrolled) {
         return toast.info("You are already enrolled in this course.");
       }
 
       const token = await getToken();
-      console.log("Got token:", token);
-
       if (!token) {
         return toast.error("Authentication token missing. Please log in again.");
       }
@@ -84,8 +106,6 @@ const CourseDetails = () => {
         { courseId: courseData._id },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
-      console.log("Purchase API response:", data);
 
       if (data.success) {
         toast.success("Redirecting to payment...");

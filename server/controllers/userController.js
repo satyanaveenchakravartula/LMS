@@ -38,7 +38,7 @@ export const createOrUpdateUser = async (req, res) => {
 // ✅ Get User Data
 export const getUserData = async (req, res) => {
   try {
-    const userId = req.auth?.userId;
+    const userId = req.auth?.userId || req.userId;
     if (!userId) return res.status(401).json({ success: false, message: "Unauthorized user" });
 
     const user = await User.findById(userId);
@@ -53,7 +53,7 @@ export const getUserData = async (req, res) => {
 // ✅ Purchase Course
 export const purchaseCourse = async (req, res) => {
   try {
-    const userId = req.auth?.userId;
+    const userId = req.auth?.userId || req.userId;
     if (!userId) return res.status(401).json({ success: false, message: "Unauthorized user" });
 
     const { courseId } = req.body;
@@ -116,7 +116,7 @@ export const purchaseCourse = async (req, res) => {
 // ✅ Get Enrolled Courses
 export const userEnrolledCourses = async (req, res) => {
   try {
-    const userId = req.auth?.userId;
+  const userId = req.auth?.userId || req.userId;
     if (!userId) return res.status(401).json({ success: false, message: "Unauthorized user" });
 
     const userData = await User.findById(userId).populate("enrolledCourses");
@@ -129,7 +129,7 @@ export const userEnrolledCourses = async (req, res) => {
 // ✅ Update Course Progress
 export const updateUserCourseProgress = async (req, res) => {
   try {
-    const userId = req.auth?.userId;
+    const userId = req.auth?.userId || req.userId;
     if (!userId) return res.status(401).json({ success: false, message: "Unauthorized user" });
 
     const { courseId, lectureId } = req.body;
@@ -159,7 +159,7 @@ export const updateUserCourseProgress = async (req, res) => {
 // ✅ Get User Course Progress
 export const getUserCourseProgress = async (req, res) => {
   try {
-    const userId = req.auth?.userId;
+    const userId = req.auth?.userId || req.userId;
     if (!userId) return res.status(401).json({ success: false, message: "Unauthorized user" });
 
     const { courseId } = req.body;

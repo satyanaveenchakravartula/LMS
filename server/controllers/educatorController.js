@@ -6,23 +6,49 @@ import { clerkClient } from '@clerk/express'
 
 // update role to educator
 export const updateRoleToEducator = async (req, res) => {
-
     try {
+        const userId = req.auth?.userId || req.userId;
+        
+        if (!userId) {
+            return res.status(401).json({ 
+                success: false, 
+                message: 'Authentication required' 
+            });
+        }
 
-        const userId = req.auth.userId
+        console.log('Updating role for user:', userId);
 
-        await clerkClient.users.updateUserMetadata(userId, {
+        // First check if user exists
+        const user = await clerkClient.users.getUser(userId);
+        if (!user) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'User not found' 
+            });
+        }
+
+        // Update the user's role
+        await clerkClient.users.updateUser(userId, {
             publicMetadata: {
+                ...user.publicMetadata,
                 role: 'educator',
             },
-        })
+        });
 
-        res.json({ success: true, message: 'You can publish a course now' })
+        console.log('Role updated successfully for user:', userId);
+
+        res.json({ 
+            success: true, 
+            message: 'You can now publish courses as an educator!' 
+        });
 
     } catch (error) {
-        res.json({ success: false, message: error.message })
+        console.error('Error updating role:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: error.message || 'Failed to update role'
+        });
     }
-
 }
 
 // Add New Course

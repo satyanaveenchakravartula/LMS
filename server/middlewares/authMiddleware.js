@@ -1,6 +1,45 @@
 // server/middleware/authMiddleware.js
 import { clerkClient } from "@clerk/express";
 
+// Middleware to protect educator routes
+export const protectEducator = async (req, res, next) => {
+  try {
+    const userId = req.auth?.userId || req.userId;
+    
+    if (!userId) {
+      return res.status(401).json({ 
+        success: false, 
+        message: 'Authentication required' 
+      });
+    }
+
+    const user = await clerkClient.users.getUser(userId);
+    
+    if (!user) {
+      return res.status(401).json({ 
+        success: false, 
+        message: 'User not found' 
+      });
+    }
+
+    if (user.publicMetadata?.role !== 'educator') {
+      return res.status(403).json({ 
+        success: false, 
+        message: 'Unauthorized: Educator access required' 
+      });
+    }
+
+    req.user = user;
+    next();
+  } catch (error) {
+    console.error('Educator auth error:', error);
+    res.status(401).json({ 
+      success: false, 
+      message: 'Authentication failed' 
+    });
+  }
+};
+
 /**
  * clerkAuth middleware:
  * - expects Clerk's requireAuth to run first (so req.auth exists),
